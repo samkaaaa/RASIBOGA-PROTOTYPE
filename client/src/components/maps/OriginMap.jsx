@@ -12,18 +12,23 @@ const LOCAL_MAP_BOUNDS = [
 ];
 
 const CARTO_TILE_KEY = (import.meta.env.VITE_CARTO_TILE_KEY || '').trim();
-const TILE_PROVIDERS = [
-  {
-    id: 'carto-voyager',
-    url: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${
-      CARTO_TILE_KEY ? `?key=${encodeURIComponent(CARTO_TILE_KEY)}` : ''
-    }`,
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-      '&copy; <a href="https://carto.com/attribution/">CARTO</a>',
-    maxNativeZoom: 19,
-    maxZoom: 20,
-  },
+
+// CARTO mengembalikan gambar placeholder bertuliskan "API KEY REQUIRED" dengan
+// HTTP 200 jika endpoint dipakai tanpa key. Karena itu CARTO hanya dipakai saat
+// key memang tersedia; penyedia utama memakai endpoint yang benar-benar bebas key.
+const CARTO_PROVIDER = {
+  id: 'carto-voyager',
+  url: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(
+    CARTO_TILE_KEY
+  )}`,
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+    '&copy; <a href="https://carto.com/attribution/">CARTO</a>',
+  maxNativeZoom: 19,
+  maxZoom: 20,
+};
+
+const KEYLESS_TILE_PROVIDERS = [
   {
     id: 'osm-de',
     url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
@@ -44,6 +49,10 @@ const TILE_PROVIDERS = [
     maxZoom: 18,
   },
 ];
+
+const TILE_PROVIDERS = CARTO_TILE_KEY
+  ? [CARTO_PROVIDER, ...KEYLESS_TILE_PROVIDERS]
+  : KEYLESS_TILE_PROVIDERS;
 const TRANSPARENT_TILE = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 
 function makeIcon(color, label) {

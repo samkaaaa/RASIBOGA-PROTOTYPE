@@ -13,7 +13,7 @@ MVP MERN (MongoDB, Express, React, Node.js) yang menghubungkan makanan, resep, a
 | --- | --- |
 | Frontend | React 19, Vite 7, React Router 7, Tailwind CSS v4 |
 | Animasi | GSAP (menghormati `prefers-reduced-motion`) |
-| Peta | Leaflet + React Leaflet, tile CARTO Voyager dengan fallback OpenStreetMap Deutschland / OpenTopoMap |
+| Peta | Leaflet + React Leaflet, tile OpenStreetMap Deutschland dengan fallback OpenTopoMap; CARTO Voyager opsional jika API key tersedia |
 | Ikon / notifikasi | Lucide React, react-hot-toast |
 | Backend | Node.js, Express 4, Mongoose 8 |
 | Auth | JWT di cookie `httpOnly`, bcryptjs |
@@ -220,9 +220,10 @@ Ubah `mainImage.url`, `image.url`, atau `coverImage` di `server/data/seedData.js
 
 Peta gastronomi adalah **Leaflet interaktif**, bukan gambar statis:
 
-- Tile utama berasal dari **CARTO Voyager** (CDN, atribusi OpenStreetMap + CARTO). Jika request ditolak, komponen otomatis beralih ke OpenStreetMap Deutschland, lalu OpenTopoMap. Atribusi mengikuti penyedia aktif.
+- Tile utama berasal dari **OpenStreetMap Deutschland** (bebas key, atribusi OpenStreetMap + penyedia tile). Jika request ditolak, komponen otomatis beralih ke OpenTopoMap. Atribusi mengikuti penyedia aktif.
+- CARTO Voyager hanya dipakai jika `VITE_CARTO_TILE_KEY` diisi. Endpoint CARTO tanpa key mengembalikan gambar placeholder `API KEY REQUIRED` dengan HTTP 200, sehingga sengaja tidak dipakai sebagai default.
 - Proyek tidak mengirim header/User-Agent buatan untuk tile; browser menggunakan identitas aslinya. Zoom maksimum native dibatasi per penyedia agar tidak meminta tile yang tidak tersedia.
-- `VITE_CARTO_TILE_KEY` opsional untuk akun CARTO yang sudah memiliki API key. Tanpa key, endpoint lama tetap dicoba lebih dulu sebelum fallback.
+- `VITE_CARTO_TILE_KEY` opsional untuk akun CARTO yang sudah memiliki API key. Jika kosong, CARTO tidak dimuat sama sekali.
 - Jika semua penyedia gagal, marker dan daftar lokasi tetap bekerja dengan pesan fallback di atas peta.
 - Koordinat contoh ada di `server/data/seedData.js` dan ditandai `unverified`.
 - `map-placeholder.svg` bukan pengganti peta interaktif; berkas itu hanya ilustrasi pendukung.
@@ -356,7 +357,8 @@ Smoke test menjalankan **49 pemeriksaan**: health, auth, katalog publik, detail,
 | Login mengembalikan `429` | Ada 8 percobaan gagal per IP dalam 10 menit. Tunggu 10 menit atau restart server development untuk mereset penghitung. |
 | Login berhasil di API tetapi gagal di browser | Jangan membuka `client/dist` lewat `vite preview` tanpa proxy `/api`; gunakan `npm.cmd run dev:client`, atau set `VITE_API_URL` ke origin API dan tambahkan origin tersebut ke `CLIENT_URL`. |
 | Password admin berubah setelah mengubah `.env` | Seed hanya membuat admin saat koleksi masih kosong. Untuk database permanen, ubah kata sandi lewat seed ulang atau koleksi `admins`; untuk in-memory, cukup restart server. |
-| Peta abu-abu tanpa tile | CARTO, OSM Deutschland, dan OpenTopoMap semuanya gagal diakses. Marker, filter, dan daftar lokasi tetap berfungsi. |
+| Peta menampilkan `API KEY REQUIRED` | Endpoint CARTO dipakai tanpa key. Pastikan `VITE_CARTO_TILE_KEY` kosong di Render agar penyedia bebas key yang dipakai. |
+| Peta abu-abu tanpa tile | OSM Deutschland dan OpenTopoMap keduanya gagal diakses. Peta contoh lokal otomatis tampil; marker, filter, dan daftar lokasi tetap berfungsi. |
 | Console menampilkan `401 /api/auth/me` | Tidak seharusnya terjadi: AuthContext hanya mengecek sesi bila cookie petunjuk `rasiboga_auth` ada. Pastikan build frontend dan server sudah memakai commit terbaru. |
 | Data hilang setiap restart | `MONGODB_URI` kosong ⇒ in-memory. Isi URI permanen lalu seed. |
 | Gambar unggahan tidak muncul | Di development, pastikan `server/uploads/` dapat diakses dan proxy `/uploads` aktif. |
