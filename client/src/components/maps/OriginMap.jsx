@@ -103,17 +103,39 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
   const [tileIndex, setTileIndex] = useState(0);
   const [tileUnavailable, setTileUnavailable] = useState(false);
   const failedTileRef = useRef(-1);
+  const activeIndexRef = useRef(0);
+  const loadTimeoutRef = useRef(null);
   const provider = TILE_PROVIDERS[tileIndex];
 
-  const handleTileError = useCallback(() => {
-    if (failedTileRef.current === tileIndex) return;
-    failedTileRef.current = tileIndex;
-    if (tileIndex < TILE_PROVIDERS.length - 1) {
-      setTileIndex(tileIndex + 1);
+  activeIndexRef.current = tileIndex;
+
+  const advanceProvider = useCallback(() => {
+    const current = activeIndexRef.current;
+    if (failedTileRef.current === current) return;
+    failedTileRef.current = current;
+    if (current < TILE_PROVIDERS.length - 1) {
+      setTileIndex(current + 1);
     } else {
       setTileUnavailable(true);
     }
-  }, [tileIndex]);
+  }, []);
+
+  const handleTileLoad = useCallback(() => {
+    if (loadTimeoutRef.current) {
+      clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Some networks block tile hosts by hanging the request instead of failing it,
+  // so `tileerror` alone is not enough. Advance when a provider stays silent.
+  useEffect(() => {
+    loadTimeoutRef.current = setTimeout(advanceProvider, 5000);
+    return () => {
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+      loadTimeoutRef.current = null;
+    };
+  }, [provider.id, advanceProvider]);
 
   return (
     <div className={`relative overflow-hidden rounded-3xl border border-line ${className}`} style={{ height }}>
@@ -132,7 +154,7 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
           maxNativeZoom={provider.maxNativeZoom}
           maxZoom={provider.maxZoom}
           errorTileUrl={TRANSPARENT_TILE}
-          eventHandlers={{ tileerror: handleTileError }}
+          eventHandlers={{ tileerror: advanceProvider, tileload: handleTileLoad }}
         />
         <FitToMarkers signature={signature} positions={points} />
 
@@ -195,9 +217,12 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
       </MapContainer>
 
       {tileUnavailable && (
-        <div className="pointer-events-none absolute inset-0 z-[399] grid place-items-center bg-cream-soft/70 p-6 text-center backdrop-blur-[1px]">
-          <p className="font-sans text-xs text-cocoa-soft">
-            Tile peta sedang tidak tersedia. Marker dan daftar lokasi tetap dapat digunakan.
+        <div className="pointer-events-none absolute inset-0 z-[1000] grid place-items-center bg-cream-soft/85 p-6 text-center backdrop-blur-[2px]">
+          <p className="font-sans text-xs font-semibold text-cocoa">
+            Tile peta sedang tidak tersedia.
+          </p>
+          <p className="mt-1 font-sans text-[11px] text-cocoa-soft">
+            Marker dan daftar lokasi tetap dapat digunakan.
           </p>
         </div>
       )}
