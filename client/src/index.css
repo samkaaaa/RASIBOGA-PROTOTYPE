@@ -282,6 +282,12 @@
   font-size: 10px;
 }
 
+/* Jika semua penyedia tile diblokir, container tetap menampilkan peta cadangan
+   lokal alih-alih area abu-abu kosong. Tile yang berhasil dimuat menutupi ini. */
+.rasiboga-map {
+  background: #e4efe9 url('/assets/map-placeholder.svg') center / cover no-repeat;
+}
+
 .rasiboga-marker {
   display: grid;
   place-items: center;

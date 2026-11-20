@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import { ImageOverlay, MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { BadgeCheck, CircleAlert } from 'lucide-react';
 import { mediaUrl } from '../../services/api.js';
 
 const REMBANG_CENTER = [-6.72, 111.42];
+const LOCAL_MAP_BOUNDS = [
+  [-6.95, 111.15],
+  [-6.46, 111.75],
+];
 
 const CARTO_TILE_KEY = (import.meta.env.VITE_CARTO_TILE_KEY || '').trim();
 const TILE_PROVIDERS = [
@@ -143,19 +147,29 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
         center={REMBANG_CENTER}
         zoom={9}
         scrollWheelZoom={false}
+        className="rasiboga-map"
         style={{ height: '100%', width: '100%' }}
         attributionControl
       >
-        <TileLayer
-          key={provider.id}
-          url={provider.url}
-          attribution={provider.attribution}
-          subdomains={provider.subdomains || 'abc'}
-          maxNativeZoom={provider.maxNativeZoom}
-          maxZoom={provider.maxZoom}
-          errorTileUrl={TRANSPARENT_TILE}
-          eventHandlers={{ tileerror: advanceProvider, tileload: handleTileLoad }}
-        />
+        {tileUnavailable ? (
+          <ImageOverlay
+            url="/assets/map-placeholder.svg"
+            bounds={LOCAL_MAP_BOUNDS}
+            opacity={0.9}
+            attribution="Peta contoh RASIBOGA — bukan untuk navigasi"
+          />
+        ) : (
+          <TileLayer
+            key={provider.id}
+            url={provider.url}
+            attribution={provider.attribution}
+            subdomains={provider.subdomains || 'abc'}
+            maxNativeZoom={provider.maxNativeZoom}
+            maxZoom={provider.maxZoom}
+            errorTileUrl={TRANSPARENT_TILE}
+            eventHandlers={{ tileerror: advanceProvider, tileload: handleTileLoad }}
+          />
+        )}
         <FitToMarkers signature={signature} positions={points} />
 
         {safeMarkers.map((marker) => {
@@ -217,13 +231,8 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
       </MapContainer>
 
       {tileUnavailable && (
-        <div className="pointer-events-none absolute inset-0 z-[1000] grid place-items-center bg-cream-soft/85 p-6 text-center backdrop-blur-[2px]">
-          <p className="font-sans text-xs font-semibold text-cocoa">
-            Tile peta sedang tidak tersedia.
-          </p>
-          <p className="mt-1 font-sans text-[11px] text-cocoa-soft">
-            Marker dan daftar lokasi tetap dapat digunakan.
-          </p>
+        <div className="pointer-events-none absolute right-3 top-3 z-[1000] max-w-[240px] rounded-full bg-cream-soft/95 px-3 py-1 font-sans text-[10px] font-medium text-cocoa-soft shadow-[0_6px_16px_-12px_rgba(46,31,27,0.4)]">
+          Peta cadangan — tile eksternal tidak tersedia
         </div>
       )}
 
