@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Ilustrasi peta contoh">
+  <rect width="800" height="500" fill="#E4EFE9"/>
+  <g stroke="#EBD9CB" stroke-width="2" fill="none">
+    <path d="M-40 40C180 10 420 90 840 30"/>
+    <path d="M-40 92C180 65 420 138 840 82"/>
+    <path d="M-40 144C180 120 420 186 840 134"/>
+    <path d="M-40 196C180 175 420 234 840 186"/>
+    <path d="M-40 248C180 230 420 282 840 238"/>
+    <path d="M-40 300C180 285 420 330 840 290"/>
+    <path d="M-40 352C180 340 420 378 840 342"/>
+    <path d="M-40 404C180 395 420 426 840 394"/>
+    <path d="M-40 456C180 450 420 474 840 446"/>
+    <path d="M-40 508C180 505 420 522 840 498"/>
+    <path d="M60 -20C40 160 120 340 70 520"/>
+    <path d="M190 -20C175 160 240 340 200 520"/>
+    <path d="M320 -20C310 160 360 340 330 520"/>
+    <path d="M450 -20C445 160 480 340 460 520"/>
+    <path d="M580 -20C580 160 600 340 590 520"/>
+    <path d="M710 -20C715 160 720 340 720 520"/>
+  </g>
+  <path d="M0 330C160 300 240 360 360 330s240-90 440-40v210H0z" fill="#3F6B55" opacity="0.10"/>
+  <g>
+    <circle cx="300" cy="230" r="14" fill="#B8232F"/>
+    <circle cx="300" cy="230" r="26" fill="#B8232F" opacity="0.2"/>
+    <circle cx="480" cy="300" r="12" fill="#3F6B55"/>
+    <circle cx="480" cy="300" r="24" fill="#3F6B55" opacity="0.2"/>
+    <circle cx="380" cy="180" r="10" fill="#2E1F1B" opacity="0.6"/>
+  </g>
+  <text x="400" y="452" text-anchor="middle" font-family="Plus Jakarta Sans, Verdana, sans-serif" font-size="13" letter-spacing="4" fill="#2E1F1B" opacity="0.55">PETA CONTOH — TITIK PERLU DIVERIFIKASI</text>
+</svg>

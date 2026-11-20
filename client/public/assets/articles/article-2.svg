@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Ilustrasi artikel contoh">
+  <defs><linearGradient id="a2" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#E4EFE9"/><stop offset="1" stop-color="#F5E7DB"/></linearGradient></defs>
+  <rect width="1200" height="675" fill="url(#a2)"/>
+  <g opacity="0.4" stroke="#3F6B55" fill="none" stroke-width="1.5">
+    <circle cx="880" cy="330" r="80" opacity="0.45"/>
+    <circle cx="880" cy="330" r="126" opacity="0.4"/>
+    <circle cx="880" cy="330" r="172" opacity="0.35"/>
+    <circle cx="880" cy="330" r="218" opacity="0.3"/>
+    <circle cx="880" cy="330" r="264" opacity="0.25"/>
+    <circle cx="880" cy="330" r="310" opacity="0.2"/>
+    <circle cx="880" cy="330" r="356" opacity="0.14999999999999997"/>
+    <circle cx="880" cy="330" r="402" opacity="0.09999999999999998"/>
+  </g>
+  <g fill="#3F6B55" opacity="0.5">
+    <path d="M300 420c60-60 130-90 210-90-10 84-60 150-150 180-30-26-50-56-60-90z"/>
+    <path d="M240 300c20-70 70-120 150-150 14 80-16 150-90 200-24-14-44-30-60-50z" opacity="0.6"/>
+  </g>
+  <text x="120" y="560" font-family="Playfair Display, Georgia, serif" font-size="40" fill="#2E1F1B" opacity="0.75">RASIBOGA · CATATAN BUDAYA</text>
+  <text x="120" y="606" font-family="Plus Jakarta Sans, Verdana, sans-serif" font-size="14" letter-spacing="5" fill="#3F6B55" opacity="0.7">CONTOH GAMBAR</text>
+</svg>

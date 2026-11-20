@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 96" role="img" aria-label="RASIBOGA">
+  <rect width="380" height="96" fill="none"/>
+  <g transform="translate(4 4)">
+    <rect width="88" height="88" rx="22" fill="#B8232F"/>
+    <g fill="none" stroke="#FFFAF5" stroke-width="3.6" stroke-linecap="round">
+      <path d="M28 58c0-15 7-28 16-35 9 7 16 20 16 35"/>
+      <path d="M44 23v41"/>
+      <path d="M35 38c5 2 9 5 9 11-5-1-9-5-9-11z" fill="#FFFAF5" stroke="none"/>
+      <path d="M53 38c-5 2-9 5-9 11 5-1 9-5 9-11z" fill="#FFFAF5" stroke="none" opacity="0.75"/>
+    </g>
+    <path d="M26 62h36" stroke="#FFFAF5" stroke-width="3.6" stroke-linecap="round"/>
+  </g>
+  <text x="112" y="52" font-family="Playfair Display, Georgia, serif" font-size="38" letter-spacing="3" fill="#2E1F1B">RASIBOGA</text>
+  <text x="114" y="74" font-family="Plus Jakarta Sans, Verdana, sans-serif" font-size="10.5" letter-spacing="3.2" fill="#3F6B55">WARISAN RASA REMBANG</text>
+</svg>

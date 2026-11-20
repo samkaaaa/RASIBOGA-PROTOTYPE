@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: rasiboga
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --prefix server --omit=dev && npm install --prefix client --include=dev && npm run build
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '10000'
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: rasiboga
+      - key: CLIENT_URL
+        value: https://rasiboga.onrender.com
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLOUDINARY_CLOUD_NAME
+        value: x2pukykw
+      - key: CLOUDINARY_API_KEY
+        value: '482818619927894'
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: ADMIN_NAME
+        value: Administrator RASIBOGA
+      - key: ADMIN_EMAIL
+        value: rasiboga@project.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MAX_IMAGE_MB
+        value: '8'
+      - key: MAX_VIDEO_MB
+        value: '50'
+      - key: VITE_API_URL
+        value: /api

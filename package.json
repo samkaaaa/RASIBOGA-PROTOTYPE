@@ -1,0 +1,19 @@
+{
+  "name": "rasiboga",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RASIBOGA — Digital Culinary Heritage Platform of Rembang (MERN MVP)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "smoke": "npm --prefix server run smoke",
+    "seed": "npm --prefix server run seed",
+    "seed:reset": "npm --prefix server run seed:reset",
+    "assets": "node tools/generate-placeholders.mjs"
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Contoh thumbnail video">
+  <rect width="800" height="450" fill="#2E1F1B"/>
+  <g opacity="0.2" stroke="#FDEFE3" fill="none" stroke-width="1.2">
+    <circle cx="400" cy="225" r="60"/>
+    <circle cx="400" cy="225" r="100"/>
+    <circle cx="400" cy="225" r="140"/>
+    <circle cx="400" cy="225" r="180"/>
+    <circle cx="400" cy="225" r="220"/>
+    <circle cx="400" cy="225" r="260"/>
+    <circle cx="400" cy="225" r="300"/>
+  </g>
+  <circle cx="400" cy="205" r="54" fill="#B8232F"/>
+  <path d="M388 182l34 23-34 23z" fill="#FDEFE3"/>
+  <text x="400" y="315" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-size="30" fill="#FDEFE3">Slot video contoh</text>
+  <text x="400" y="350" text-anchor="middle" font-family="Plus Jakarta Sans, Verdana, sans-serif" font-size="12" letter-spacing="4" fill="#FDEFE3" opacity="0.6">GANTI MELALUI DASHBOARD ADMIN</text>
+</svg>

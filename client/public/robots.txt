@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /masuk
+
+# Sitemap belum diaktifkan karena konten masih tahap draf.
+# Setelah domain produksi tersedia, tambahkan:
+# Sitemap: https://domain-anda.example/sitemap.xml
