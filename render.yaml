@@ -42,3 +42,5 @@ services:
         value: '50'
       - key: VITE_API_URL
         value: /api
+      - key: VITE_CARTO_TILE_KEY
+        sync: false

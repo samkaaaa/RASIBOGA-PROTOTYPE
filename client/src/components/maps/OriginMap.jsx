@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -6,6 +6,41 @@ import { BadgeCheck, CircleAlert } from 'lucide-react';
 import { mediaUrl } from '../../services/api.js';
 
 const REMBANG_CENTER = [-6.72, 111.42];
+
+const CARTO_TILE_KEY = (import.meta.env.VITE_CARTO_TILE_KEY || '').trim();
+const TILE_PROVIDERS = [
+  {
+    id: 'carto-voyager',
+    url: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png${
+      CARTO_TILE_KEY ? `?key=${encodeURIComponent(CARTO_TILE_KEY)}` : ''
+    }`,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+      '&copy; <a href="https://carto.com/attribution/">CARTO</a>',
+    maxNativeZoom: 19,
+    maxZoom: 20,
+  },
+  {
+    id: 'osm-de',
+    url: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+      'tiles by <a href="https://www.openstreetmap.de/">OpenStreetMap Deutschland</a>',
+    maxNativeZoom: 18,
+    maxZoom: 19,
+  },
+  {
+    id: 'opentopomap',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | ' +
+      'Map style: &copy; <a href="https://opentopomap.org/">OpenTopoMap</a> (CC BY-SA)',
+    subdomains: 'abc',
+    maxNativeZoom: 17,
+    maxZoom: 18,
+  },
+];
+const TRANSPARENT_TILE = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 
 function makeIcon(color, label) {
   return L.divIcon({
@@ -65,6 +100,21 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
     [isFood]
   );
 
+  const [tileIndex, setTileIndex] = useState(0);
+  const [tileUnavailable, setTileUnavailable] = useState(false);
+  const failedTileRef = useRef(-1);
+  const provider = TILE_PROVIDERS[tileIndex];
+
+  const handleTileError = useCallback(() => {
+    if (failedTileRef.current === tileIndex) return;
+    failedTileRef.current = tileIndex;
+    if (tileIndex < TILE_PROVIDERS.length - 1) {
+      setTileIndex(tileIndex + 1);
+    } else {
+      setTileUnavailable(true);
+    }
+  }, [tileIndex]);
+
   return (
     <div className={`relative overflow-hidden rounded-3xl border border-line ${className}`} style={{ height }}>
       <MapContainer
@@ -75,9 +125,14 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
         attributionControl
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          maxZoom={18}
+          key={provider.id}
+          url={provider.url}
+          attribution={provider.attribution}
+          subdomains={provider.subdomains || 'abc'}
+          maxNativeZoom={provider.maxNativeZoom}
+          maxZoom={provider.maxZoom}
+          errorTileUrl={TRANSPARENT_TILE}
+          eventHandlers={{ tileerror: handleTileError }}
         />
         <FitToMarkers signature={signature} positions={points} />
 
@@ -138,6 +193,14 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
           );
         })}
       </MapContainer>
+
+      {tileUnavailable && (
+        <div className="pointer-events-none absolute inset-0 z-[399] grid place-items-center bg-cream-soft/70 p-6 text-center backdrop-blur-[1px]">
+          <p className="font-sans text-xs text-cocoa-soft">
+            Tile peta sedang tidak tersedia. Marker dan daftar lokasi tetap dapat digunakan.
+          </p>
+        </div>
+      )}
 
       {!safeMarkers.length && (
         <div className="pointer-events-none absolute inset-0 grid place-items-center bg-cream-soft/85 p-6 text-center backdrop-blur-[2px]">
