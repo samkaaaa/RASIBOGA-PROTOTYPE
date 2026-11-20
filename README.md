@@ -354,7 +354,7 @@ Smoke test menjalankan **49 pemeriksaan**: health, auth, katalog publik, detail,
 | Login berhasil di API tetapi gagal di browser | Jangan membuka `client/dist` lewat `vite preview` tanpa proxy `/api`; gunakan `npm.cmd run dev:client`, atau set `VITE_API_URL` ke origin API dan tambahkan origin tersebut ke `CLIENT_URL`. |
 | Password admin berubah setelah mengubah `.env` | Seed hanya membuat admin saat koleksi masih kosong. Untuk database permanen, ubah kata sandi lewat seed ulang atau koleksi `admins`; untuk in-memory, cukup restart server. |
 | Peta abu-abu tanpa tile | Jaringan memblokir `tile.openstreetmap.org`. Marker, filter, dan daftar lokasi tetap berfungsi. |
-| Console menampilkan `401 /api/auth/me` | Normal saat belum login; AuthContext mengecek sesi. |
+| Console menampilkan `401 /api/auth/me` | Tidak seharusnya terjadi: AuthContext hanya mengecek sesi bila cookie petunjuk `rasiboga_auth` ada. Pastikan build frontend dan server sudah memakai commit terbaru. |
 | Data hilang setiap restart | `MONGODB_URI` kosong ⇒ in-memory. Isi URI permanen lalu seed. |
 | Gambar unggahan tidak muncul | Di development, pastikan `server/uploads/` dapat diakses dan proxy `/uploads` aktif. |
 | `npm run seed` seolah tidak menyimpan data | Tanpa `MONGODB_URI`, seed berjalan di database in-memory yang langsung dimatikan. |

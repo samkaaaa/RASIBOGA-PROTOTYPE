@@ -1,6 +1,6 @@
 import Admin from '../models/Admin.js';
 import { ApiError, asyncHandler } from '../utils/helpers.js';
-import { AUTH_COOKIE, cookieOptions, signToken } from '../middleware/auth.js';
+import { AUTH_COOKIE, AUTH_HINT_COOKIE, cookieOptions, signToken } from '../middleware/auth.js';
 
 const MAX_ATTEMPTS = 8;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -51,6 +51,7 @@ export const login = asyncHandler(async (req, res) => {
 
   const token = signToken(admin);
   res.cookie(AUTH_COOKIE, token, cookieOptions());
+  res.cookie(AUTH_HINT_COOKIE, '1', { ...cookieOptions(), httpOnly: false });
 
   res.json({
     success: true,
@@ -61,6 +62,7 @@ export const login = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (_req, res) => {
   res.clearCookie(AUTH_COOKIE, { ...cookieOptions(), maxAge: undefined });
+  res.clearCookie(AUTH_HINT_COOKIE, { ...cookieOptions(), httpOnly: false, maxAge: undefined });
   res.json({ success: true, message: 'Berhasil keluar.' });
 });
 

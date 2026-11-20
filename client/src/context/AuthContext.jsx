@@ -2,6 +2,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { authApi } from '../services/api.js';
 
 const AuthContext = createContext(null);
+const AUTH_HINT_COOKIE = 'rasiboga_auth';
+
+function hasAuthHint() {
+  return document.cookie.split('; ').some((item) => item.startsWith(`${AUTH_HINT_COOKIE}=`));
+}
 
 export function AuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
@@ -21,7 +26,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    if (hasAuthHint()) {
+      refresh();
+    } else {
+      setLoading(false);
+    }
   }, [refresh]);
 
   const login = useCallback(async (email, password) => {

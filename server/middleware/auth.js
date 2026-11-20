@@ -3,6 +3,8 @@ import Admin from '../models/Admin.js';
 import { ApiError, asyncHandler } from '../utils/helpers.js';
 
 export const AUTH_COOKIE = 'rasiboga_token';
+/** Non-sensitive hint so the SPA can skip /auth/me when nobody is logged in. */
+export const AUTH_HINT_COOKIE = 'rasiboga_auth';
 
 export function signToken(admin) {
   return jwt.sign(
