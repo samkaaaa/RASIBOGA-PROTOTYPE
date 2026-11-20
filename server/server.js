@@ -88,8 +88,20 @@ app.use('/api', apiRoutes);
 /* ------------------------------------------------------------------ */
 const clientDist = path.resolve(process.cwd(), '..', 'client', 'dist');
 if (isProd && fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist, { maxAge: '1h', index: false }));
+  app.use(
+    express.static(clientDist, {
+      index: false,
+      maxAge: '1h',
+      setHeaders(res, filePath) {
+        // index.html references hashed bundles, so it must always be revalidated.
+        if (path.basename(filePath) === 'index.html') {
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      },
+    })
+  );
   app.get(/^(?!\/api|\/uploads).*/, (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 }
