@@ -14,6 +14,7 @@ import GastronomyMap from './pages/GastronomyMap.jsx';
 import Stories from './pages/Stories.jsx';
 import StoryDetail from './pages/StoryDetail.jsx';
 import Glossary from './pages/Glossary.jsx';
+import IngredientDetail from './pages/IngredientDetail.jsx';
 import Community from './pages/Community.jsx';
 import Bookmarks from './pages/Bookmarks.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="cerita" element={<Stories />} />
           <Route path="cerita/:slug" element={<StoryDetail />} />
           <Route path="glosarium" element={<Glossary />} />
+          <Route path="bahan/:slug" element={<IngredientDetail />} />
           <Route path="kontribusi" element={<Community />} />
           <Route path="simpanan" element={<Bookmarks />} />
           <Route path="*" element={<NotFound />} />

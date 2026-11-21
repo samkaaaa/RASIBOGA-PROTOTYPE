@@ -325,7 +325,7 @@ export default function FoodDetail() {
               {ingredients.map((ingredient) => (
                 <Link
                   key={ingredient._id}
-                  to={`/glosarium?search=${encodeURIComponent(ingredient.name)}`}
+                  to={`/bahan/${ingredient.slug}`}
                   className="card-sm card-hover flex items-center gap-4 p-4"
                 >
                   <img

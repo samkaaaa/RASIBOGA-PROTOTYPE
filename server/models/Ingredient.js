@@ -8,6 +8,7 @@ const ingredientSchema = new Schema(
     name: { type: String, required: [true, 'Nama bahan wajib diisi'], trim: true, maxlength: 140 },
     slug: { type: String, lowercase: true, trim: true, index: true },
     description: { type: String, default: '', trim: true, maxlength: 4000 },
+    gastronomyDescription: { type: String, default: '', trim: true, maxlength: 12000 },
     originLocations: [{ type: Schema.Types.ObjectId, ref: 'Location' }],
     image: { type: mediaSchema, default: () => ({}) },
     verificationStatus: {

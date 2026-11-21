@@ -4,7 +4,8 @@ import Recipe from '../models/Recipe.js';
 import { ApiError, asyncHandler, escapeRegex, parsePagination, slugify, uniqueSlug } from '../utils/helpers.js';
 import { deleteMedia } from '../services/media.js';
 
-const LOCATION_FIELDS = 'name village district regency coordinates verificationStatus locationType';
+const LOCATION_FIELDS =
+  'name village district regency province coordinates description verificationStatus locationType';
 
 export const listIngredients = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePagination(req.query);
@@ -12,7 +13,7 @@ export const listIngredients = asyncHandler(async (req, res) => {
 
   if (req.query.search) {
     const rx = new RegExp(escapeRegex(req.query.search), 'i');
-    filter.$or = [{ name: rx }, { description: rx }];
+    filter.$or = [{ name: rx }, { description: rx }, { gastronomyDescription: rx }];
   }
   if (req.query.verificationStatus) filter.verificationStatus = req.query.verificationStatus;
   if (req.query.location) filter.originLocations = req.query.location;

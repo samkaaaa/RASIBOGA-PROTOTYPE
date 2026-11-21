@@ -1,3 +1,4 @@
+import { mediaUrl } from '../../services/api.js';
 import { parseArticleContent } from '../../utils/format.js';
 
 /**
@@ -12,6 +13,25 @@ export default function RichText({ content = '', className = 'prose-editorial' }
   return (
     <div className={className}>
       {blocks.map((block, index) => {
+        if (block.type === 'image') {
+          return (
+            <figure key={index} className="archive-figure">
+              <img
+                src={mediaUrl(block.src)}
+                alt={block.caption || 'Foto arsip dokumentasi'}
+                loading="lazy"
+                decoding="async"
+                className="archive-figure-img"
+              />
+              {block.caption && (
+                <figcaption className="archive-figure-caption">
+                  <span className="archive-figure-label">Arsip</span>
+                  {block.caption}
+                </figcaption>
+              )}
+            </figure>
+          );
+        }
         if (block.type === 'h2') {
           return <h2 key={index} dangerouslySetInnerHTML={{ __html: block.html }} />;
         }

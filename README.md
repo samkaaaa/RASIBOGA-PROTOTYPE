@@ -216,6 +216,26 @@ Semua visual saat ini adalah **SVG contoh yang dapat diedit**. Berkas berada di 
 
 Ubah `mainImage.url`, `image.url`, atau `coverImage` di `server/data/seedData.js`, lalu jalankan `npm run seed:reset` pada database permanen.
 
+### Foto arsip di artikel
+
+- Di **Admin → Artikel**, kolom **ISI ARTIKEL** dilengkapi toolbar **Sisipkan foto arsip**. Foto diunggah melalui `POST /api/uploads` ke folder `rasiboga/articles/archive`, lalu syntax `![Foto arsip — keterangan](url "Keterangan arsip")` disisipkan di posisi kursor.
+- Kolom **GAMBAR SAMPUL** tetap terpisah dan tidak berubah.
+- Penulisan manual juga didukung. Letakkan foto pada baris tersendiri:
+
+  ```md
+  ![Dokumentasi dapur, Pancur, 2024](https://…/foto.jpg "Keterangan arsip, sumber, dan tanggal")
+  ```
+
+- Halaman detail artikel merender syntax tersebut sebagai `<figure>` responsif dengan `<figcaption>` bergaya RASIBOGA. Gambar tidak dipotong dan lebar mengikuti container.
+- Hanya URL `http(s)://` atau path absolut (`/uploads/...`, `/assets/...`) yang diterima parser.
+
+### Deskripsi gastronomi bahan
+
+- Di **Admin → Bahan**, **DESKRIPSI** tetap dipakai sebagai ringkasan kartu. Kolom baru **DESKRIPSI GASTRONOMI** berisi narasi panjang (maks. 12.000 karakter) dengan format teks yang sama seperti artikel.
+- Setiap wilayah pada **LOKASI ASAL** menampilkan status koordinat. Wilayah yang belum punya titik dapat diisi langsung di form bahan (Latitude/Longitude lalu **Simpan titik**) atau dibuka di Google Maps. Pengelolaan master wilayah tetap tersedia di **Admin → Lokasi**.
+- Halaman publik `/bahan/:slug` menampilkan nama, gambar, status verifikasi, ringkasan, narasi gastronomi, daftar seluruh lokasi asal, dan peta Leaflet dengan marker untuk semua lokasi yang sudah berkoordinat.
+- Tombol **Lihat Gastronomi** tersedia di kartu bahan pada `/glosarium`. Kartu bahan di detail makanan, daftar marker `/peta`, dan popup peta juga mengarah ke halaman detail bahan.
+
 ### Peta
 
 Peta gastronomi adalah **Leaflet interaktif**, bukan gambar statis:
@@ -293,7 +313,7 @@ Error: `{ "success": false, "message": "...", "details": [] }`.
 | Auth | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` |
 | Makanan | `GET /api/foods`, `GET /api/foods/:slug`, `POST/PUT/DELETE /api/foods` (admin) |
 | Resep | `GET /api/recipes`, `GET /api/recipes/:id`, `POST/PUT/DELETE /api/recipes` (admin) |
-| Bahan | `GET /api/ingredients`, `POST/PUT/DELETE` (admin) |
+| Bahan | `GET /api/ingredients`, `GET /api/ingredients/slug/:slug`, `POST/PUT/DELETE` (admin) |
 | Lokasi | `GET /api/locations`, `GET /api/locations/map`, CRUD (admin) |
 | Video | `GET /api/videos`, CRUD (admin) |
 | Artikel | `GET /api/articles`, `GET /api/articles/:slug`, CRUD (admin) |

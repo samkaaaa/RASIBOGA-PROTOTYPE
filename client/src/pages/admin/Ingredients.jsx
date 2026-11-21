@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { ExternalLink, Loader2, MapPin, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api, { getData, mediaUrl } from '../../services/api.js';
 import useAsync from '../../hooks/useAsync.js';
@@ -13,6 +13,7 @@ import { VerificationBadge } from '../../components/common/Badges.jsx';
 const EMPTY_FORM = {
   name: '',
   description: '',
+  gastronomyDescription: '',
   verificationStatus: 'unverified',
   originLocations: [],
   image: { url: '', publicId: '', resourceType: '' },
@@ -33,6 +34,8 @@ export default function AdminIngredients() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [coordinateDrafts, setCoordinateDrafts] = useState({});
+  const [savingCoordinate, setSavingCoordinate] = useState(null);
 
   const rows = useMemo(() => {
     const list = data?.ingredients || [];
@@ -42,6 +45,64 @@ export default function AdminIngredients() {
   }, [data, query]);
 
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+
+  const hasCoordinates = (location) =>
+    Number.isFinite(location?.coordinates?.lat) && Number.isFinite(location?.coordinates?.lng);
+
+  const draftFromLocations = () =>
+    Object.fromEntries(
+      (data?.locations || []).map((location) => [
+        location._id,
+        { lat: location.coordinates?.lat ?? '', lng: location.coordinates?.lng ?? '' },
+      ])
+    );
+
+  const draftFor = (location) =>
+    coordinateDrafts[location._id] || {
+      lat: location.coordinates?.lat ?? '',
+      lng: location.coordinates?.lng ?? '',
+    };
+
+  const setCoordinate = (id, key, value) =>
+    setCoordinateDrafts((current) => ({
+      ...current,
+      [id]: { ...(current[id] || { lat: '', lng: '' }), [key]: value },
+    }));
+
+  const saveCoordinate = async (location) => {
+    const draft = draftFor(location);
+    const lat = draft.lat === '' ? null : Number(draft.lat);
+    const lng = draft.lng === '' ? null : Number(draft.lng);
+    if ((lat === null) !== (lng === null)) {
+      toast.error('Isi lintang dan bujur sekaligus, atau kosongkan keduanya.');
+      return;
+    }
+    if (lat !== null && (!Number.isFinite(lat) || !Number.isFinite(lng))) {
+      toast.error('Koordinat tidak valid.');
+      return;
+    }
+
+    setSavingCoordinate(location._id);
+    try {
+      await api.put(`/locations/${location._id}`, {
+        name: location.name,
+        village: location.village || '',
+        district: location.district || '',
+        regency: location.regency || 'Rembang',
+        province: location.province || 'Jawa Tengah',
+        description: location.description || '',
+        locationType: location.locationType?.length ? location.locationType : ['ingredient-origin'],
+        verificationStatus: location.verificationStatus || 'unverified',
+        coordinates: { lat, lng },
+      });
+      toast.success('Titik koordinat lokasi disimpan.');
+      reload();
+    } catch (coordinateError) {
+      toast.error(coordinateError.message || 'Gagal menyimpan koordinat lokasi.');
+    } finally {
+      setSavingCoordinate(null);
+    }
+  };
 
   const toggleOrigin = (id) => {
     setForm((current) => ({
@@ -55,6 +116,7 @@ export default function AdminIngredients() {
   const openCreate = () => {
     setEditing(null);
     setForm(EMPTY_FORM);
+    setCoordinateDrafts(draftFromLocations());
     setOpen(true);
   };
 
@@ -63,10 +125,12 @@ export default function AdminIngredients() {
     setForm({
       name: ingredient.name || '',
       description: ingredient.description || '',
+      gastronomyDescription: ingredient.gastronomyDescription || '',
       verificationStatus: ingredient.verificationStatus || 'unverified',
       originLocations: (ingredient.originLocations || []).map((item) => item._id),
       image: ingredient.image || { url: '', publicId: '', resourceType: '' },
     });
+    setCoordinateDrafts(draftFromLocations());
     setOpen(true);
   };
 
@@ -82,6 +146,7 @@ export default function AdminIngredients() {
       const payload = {
         name: form.name.trim(),
         description: form.description.trim(),
+        gastronomyDescription: form.gastronomyDescription.trim(),
         verificationStatus: form.verificationStatus,
         originLocations: form.originLocations,
         image: form.image,
@@ -190,7 +255,7 @@ export default function AdminIngredients() {
     <>
       <AdminPageHeader
         title="Bahan pangan"
-        description="Catat bahan, asal-usul, gambar, dan status verifikasinya. Bahan terhubung ke resep."
+        description="Catat ringkasan dan narasi gastronomi bahan, asal-usul beserta titik koordinatnya, gambar, dan status verifikasi. Bahan terhubung ke resep."
         action={{ label: 'Tambah bahan', onClick: openCreate, icon: <Plus size={14} /> }}
       />
 
@@ -255,13 +320,28 @@ export default function AdminIngredients() {
             />
           </Field>
 
-          <Field label="Deskripsi">
+          <Field label="Deskripsi" hint="Ringkasan singkat yang tampil di kartu daftar bahan.">
             <textarea
               value={form.description}
               onChange={(event) => update('description', event.target.value)}
               rows={3}
               className="admin-input"
               placeholder="Keterangan singkat bahan…"
+              maxLength={4000}
+            />
+          </Field>
+
+          <Field
+            label="Deskripsi gastronomi"
+            hint="Narasi panjang: sejarah, karakteristik rasa, peran kuliner, dan cara pengolahan. Mendukung ## subjudul, daftar, dan **tebal**."
+          >
+            <textarea
+              value={form.gastronomyDescription}
+              onChange={(event) => update('gastronomyDescription', event.target.value)}
+              rows={9}
+              className="admin-input"
+              placeholder="Tulis kisah dan karakter gastronomi bahan ini…"
+              maxLength={12000}
             />
           </Field>
 
@@ -278,24 +358,96 @@ export default function AdminIngredients() {
 
           <div>
             <span className="admin-label">Lokasi asal</span>
-            <div className="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-line bg-cream-soft/70 p-2">
-              {(data?.locations || []).map((location) => (
-                <label
-                  key={location._id}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 font-sans text-xs hover:bg-cream"
-                >
-                  <input
-                    type="checkbox"
-                    checked={form.originLocations.includes(location._id)}
-                    onChange={() => toggleOrigin(location._id)}
-                    className="h-4 w-4 accent-teal"
-                  />
-                  <span className="flex-1">
-                    {location.name}
-                    {location.district ? ` · ${location.district}` : ''}
-                  </span>
-                </label>
-              ))}
+            <p className="mb-2 font-sans text-[11px] leading-relaxed text-cocoa-faint">
+              Centang wilayah asal. Titik koordinat dipakai untuk marker peta; wilayah tanpa
+              koordinat dapat diisi langsung di sini atau dibuka di Google Maps.
+            </p>
+            <div className="max-h-60 space-y-1.5 overflow-y-auto rounded-xl border border-line bg-cream-soft/70 p-2">
+              {(data?.locations || []).map((location) => {
+                const selected = form.originLocations.includes(location._id);
+                const mapped = hasCoordinates(location);
+                const draft = draftFor(location);
+                return (
+                  <div key={location._id} className="rounded-lg px-2 py-1.5 hover:bg-cream">
+                    <div className="flex items-center gap-2">
+                      <input
+                        id={`origin-${location._id}`}
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => toggleOrigin(location._id)}
+                        className="h-4 w-4 shrink-0 accent-teal"
+                      />
+                      <label
+                        htmlFor={`origin-${location._id}`}
+                        className="min-w-0 flex-1 cursor-pointer font-sans text-xs text-cocoa"
+                      >
+                        {location.name}
+                        {location.district ? ` · ${location.district}` : ''}
+                      </label>
+                      {mapped ? (
+                        <a
+                          href={`https://www.google.com/maps?q=${draft.lat},${draft.lng}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Buka titik di Google Maps"
+                          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-teal/25 bg-teal-soft px-2 py-0.5 font-sans text-[9px] font-semibold text-teal-dark hover:border-teal/50"
+                        >
+                          <MapPin size={10} /> Peta
+                          <ExternalLink size={9} />
+                        </a>
+                      ) : (
+                        <span className="shrink-0 rounded-full border border-brick/25 bg-brick-soft px-2 py-0.5 font-sans text-[9px] font-semibold text-brick">
+                          Tanpa koordinat
+                        </span>
+                      )}
+                    </div>
+
+                    {selected ? (
+                      <div className="mt-2 flex flex-wrap items-end gap-2 border-t border-line/70 pt-2">
+                        <div className="min-w-[92px] flex-1">
+                          <span className="block font-sans text-[9px] uppercase tracking-wider text-cocoa-faint">
+                            Latitude
+                          </span>
+                          <input
+                            type="number"
+                            step="any"
+                            value={draft.lat}
+                            onChange={(event) => setCoordinate(location._id, 'lat', event.target.value)}
+                            placeholder="-6.7215"
+                            className="admin-input mt-0.5 px-2 py-1 text-[11px]"
+                          />
+                        </div>
+                        <div className="min-w-[92px] flex-1">
+                          <span className="block font-sans text-[9px] uppercase tracking-wider text-cocoa-faint">
+                            Longitude
+                          </span>
+                          <input
+                            type="number"
+                            step="any"
+                            value={draft.lng}
+                            onChange={(event) => setCoordinate(location._id, 'lng', event.target.value)}
+                            placeholder="111.4684"
+                            className="admin-input mt-0.5 px-2 py-1 text-[11px]"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => saveCoordinate(location)}
+                          disabled={savingCoordinate === location._id}
+                          className="btn-outline btn-sm shrink-0"
+                        >
+                          {savingCoordinate === location._id ? (
+                            <Loader2 size={11} className="animate-spin" />
+                          ) : (
+                            <MapPin size={11} />
+                          )}
+                          Simpan titik
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
               {!data?.locations?.length && (
                 <p className="px-2 py-2 font-sans text-xs text-cocoa-faint">
                   Belum ada lokasi. Tambahkan melalui menu Lokasi.

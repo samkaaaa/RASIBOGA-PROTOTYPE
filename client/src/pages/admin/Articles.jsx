@@ -8,6 +8,7 @@ import AdminTable from '../../components/admin/AdminTable.jsx';
 import Modal from '../../components/admin/Modal.jsx';
 import Field from '../../components/admin/Field.jsx';
 import ImageField from '../../components/admin/ImageField.jsx';
+import ArticleContentEditor from '../../components/admin/ArticleContentEditor.jsx';
 import { formatDate } from '../../utils/format.js';
 
 const EMPTY_FORM = {
@@ -194,7 +195,7 @@ export default function AdminArticles() {
     <>
       <AdminPageHeader
         title="Artikel & cerita"
-        description="Tulis catatan budaya, metodologi, atau pengantar peta. Format teks mendukung ## subjudul, daftar, dan **tebal**."
+        description="Tulis catatan budaya, metodologi, atau pengantar peta. Sisipkan foto arsip dari kolom ISI ARTIKEL; format teks mendukung ## subjudul, daftar, **tebal**, dan ![keterangan](url)."
         action={{ label: 'Tambah artikel', onClick: openCreate, icon: <Plus size={14} /> }}
       />
 
@@ -324,18 +325,13 @@ export default function AdminArticles() {
             />
           </div>
 
-          <Field
-            label="Isi artikel"
-            hint="Gunakan ## untuk subjudul, - untuk daftar, **teks** untuk tebal."
-            className="sm:col-span-2"
-          >
-            <textarea
+          <div className="sm:col-span-2">
+            <ArticleContentEditor
               value={form.content}
-              onChange={(event) => update('content', event.target.value)}
+              onChange={(value) => update('content', value)}
               rows={12}
-              className="admin-input font-mono text-xs"
             />
-          </Field>
+          </div>
         </form>
       </Modal>
     </>

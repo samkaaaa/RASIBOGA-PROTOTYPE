@@ -226,10 +226,10 @@ export default function OriginMap({ markers = [], mode = 'food', height = '520px
                     </Link>
                   ) : (
                     <Link
-                      to={`/jelajah?search=${encodeURIComponent(marker.name)}`}
+                      to={`/bahan/${marker.slug}`}
                       className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-teal-dark px-3 py-1.5 text-[11px] font-semibold text-cream-soft"
                     >
-                      Cari bahan ini
+                      Lihat gastronomi
                     </Link>
                   )}
                 </div>

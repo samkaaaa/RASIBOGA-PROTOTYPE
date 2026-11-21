@@ -16,6 +16,11 @@ const router = Router();
 const ingredientValidators = (isCreate = false) => [
   body('name').if(() => isCreate).trim().notEmpty().withMessage('Nama bahan wajib diisi'),
   body('name').optional().trim().isLength({ max: 140 }),
+  body('gastronomyDescription')
+    .optional()
+    .trim()
+    .isLength({ max: 12000 })
+    .withMessage('Deskripsi gastronomi maksimal 12000 karakter'),
   body('originLocations').optional().isArray(),
   body('originLocations.*').optional().isMongoId().withMessage('Lokasi asal tidak valid'),
   body('verificationStatus')

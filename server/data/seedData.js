@@ -126,12 +126,16 @@ export const ingredientsSeed = [
     key: 'beras',
     name: 'Beras',
     description: 'Bahan dasar lontong dan nasi. Contoh data; asal pasokan belum diverifikasi.',
+    gastronomyDescription:
+      '## Dari sawah ke meja\nBeras adalah fondasi hampir setiap hidangan Rembang. Di Pancur, sawah tadah hujan menghasilkan gabah yang digiling menjadi beras putih maupun beras merah.\n\n## Karakter rasa\nBeras lokal yang baru digiling memiliki aroma khas dan tekstur pulen. Nasi hangat dipasangkan dengan kuah santan, sambal, dan ikan asin, sementara lontong beras menjadi teman tetap lontong mie dan soto.\n\nCara mengolahnya sederhana: dicuci bersih, dimasak dengan api sedang, lalu diaduk perlahan agar butirannya tetap utuh. **Kualitas beras sangat ditentukan oleh proses pengeringan.**',
     originKeys: ['pancur'],
   },
   {
     key: 'santan',
     name: 'Santan',
     description: 'Santan kelapa untuk kuah gurih. Contoh data; asal kelapa belum diverifikasi.',
+    gastronomyDescription:
+      '## Lelehnya rasa gurih\nSantan didapat dari parutan daging kelapa yang diperas dengan air hangat. Di Gunem, kelapa dipanen dari kebun pesisir lalu diparut segar agar hasilnya tidak cepat tengik.\n\n## Peran dalam masakan\nKuah santan memberi body pada soto, lontong mie, dan sayur godog. Santan kental yang dimasak perlahan menghasilkan rasa manis alami dan tekstur yang melekat di nasi.\n\n**Tips dapur:** jangan memasak santan dengan api besar sambil dibiarkan, karena kuah dapat pecah. Aduk terus hingga mengental.',
     originKeys: ['gunem'],
   },
   {
@@ -186,6 +190,8 @@ export const ingredientsSeed = [
     key: 'gula-jawa',
     name: 'Gula Jawa',
     description: 'Pemanis tradisional dari nira kelapa. Contoh data.',
+    gastronomyDescription:
+      '## Manis yang berlapis\nGula jawa dibuat dari nira kelapa yang dimasak perlahan dalam wajan besar hingga mengental dan berwarna cokelat gelap. Proses ini menghasilkan rasa manis dengan sentuhan karamel dan sedikit asap.\n\n## Dalam masakan Rembang\nGula jawa memberi keseimbangan pada kuah bersantan, sambal, dan jajanan tradisional. Perpaduan gula jawa, asam jawa, dan cabai menghasilkan rasa pedas-manis yang menjadi ciri khas sejumlah laut panggang.',
     originKeys: ['gunem'],
   },
   {
@@ -216,6 +222,8 @@ export const ingredientsSeed = [
     key: 'kerang',
     name: 'Kerang (Kelo)',
     description: 'Hasil laut yang dikaitkan dengan kawasan pesisir Rembang. Contoh data.',
+    gastronomyDescription:
+      '## Rasa laut di pesisir\nKerang atau kelo dikumpulkan nelayan pesisir Rembang saat air surut. Dagingnya yang kecil memiliki rasa asin-manis khas laut Utara Jawa.\n\n## Cara menikmati\nKerang direbus sebentar hingga terbuka, lalu ditumis dengan bawang, cabai, dan sedikit santan. Kuahnya biasanya disiramkan ke nasi hangat atau dinikmati bersama lontong.\n\n**Catatan:** kerang harus benar-benar segar dan dimasak matang sebelum dikonsumsi.',
     originKeys: ['pesisir-rembang'],
   },
   {
@@ -228,6 +236,8 @@ export const ingredientsSeed = [
     key: 'kelapa-muda',
     name: 'Kelapa Muda',
     description: 'Isian minuman dingin. Contoh data.',
+    gastronomyDescription:
+      '## Kesegaran pesisir\nKelapa muda dipanen dari pohon kelapa di sepanjang pesisir Rembang. Airnya yang jernih dan dagingnya yang lunak menyegarkan setelah seharian bekerja di laut.\n\n## Pengolahan\nKelapa muda umumnya disajikan langsung dengan es, gula, atau sirup. Airnya juga dipakai untuk menambah rasa manis alami pada kuah dan minuman tradisional. Dagingnya dapat diserut menjadi bahan kue dan santan.',
     originKeys: ['pesisir-rembang'],
   },
   {

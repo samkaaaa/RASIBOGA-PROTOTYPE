@@ -205,9 +205,17 @@ async function main() {
   // Ingredient
   const newIngredient = await request('POST', '/ingredients', {
     token,
-    body: { name: `Bahan Uji ${suffix}`, description: 'Bahan uji.' },
+    body: {
+      name: `Bahan Uji ${suffix}`,
+      description: 'Bahan uji.',
+      gastronomyDescription: '## Narasi uji\nRasa, sejarah, dan cara olah bahan uji.',
+    },
   });
   check('create ingredient', newIngredient.status === 201);
+  check(
+    'gastronomy description persisted',
+    newIngredient.json?.data?.gastronomyDescription?.includes('Narasi uji')
+  );
   const ingredientNewId = newIngredient.json?.data?._id;
 
   const dupIngredient = await request('POST', '/ingredients', {
@@ -237,6 +245,29 @@ async function main() {
   });
   check('invalid coordinates rejected', badLocation.status === 400);
 
+  const ingredientDetail = await request(
+    'GET',
+    `/ingredients/slug/${newIngredient.json?.data?.slug}`
+  );
+  check(
+    'ingredient slug detail includes gastronomy',
+    ingredientDetail.status === 200 &&
+      ingredientDetail.json?.data?.gastronomyDescription?.includes('Narasi uji')
+  );
+
+  const linkedIngredient = await request('PUT', `/ingredients/${ingredientNewId}`, {
+    token,
+    body: {
+      originLocations: [locationId],
+      gastronomyDescription: '## Narasi lengkap\nDitambahkan setelah lokasi tersedia.',
+    },
+  });
+  check(
+    'ingredient links a mappable location',
+    linkedIngredient.status === 200 &&
+      linkedIngredient.json?.data?.originLocations?.[0]?.hasCoordinates === true
+  );
+
   // Video + YouTube validation
   const badVideo = await request('POST', '/videos', {
     token,
@@ -263,9 +294,18 @@ async function main() {
   // Article
   const article = await request('POST', '/articles', {
     token,
-    body: { title: `Artikel Uji ${suffix}`, excerpt: 'Uji.', content: 'Isi uji.', published: true },
+    body: {
+      title: `Artikel Uji ${suffix}`,
+      excerpt: 'Uji.',
+      content: 'Isi uji.\n\n![Arsip uji](/uploads/arsip.png "Keterangan arsip")',
+      published: true,
+    },
   });
   check('create article', article.status === 201 && Boolean(article.json?.data?.slug));
+  check(
+    'article archive image syntax stored verbatim',
+    article.json?.data?.content?.includes('![Arsip uji](/uploads/arsip.png "Keterangan arsip")')
+  );
   const articleId = article.json?.data?._id;
 
   // Upload (1x1 PNG)

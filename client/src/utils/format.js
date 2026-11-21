@@ -41,7 +41,10 @@ export function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
 }
 
-/** Simple markdown-lite renderer used for article content (no raw HTML). */
+/**
+ * Simple markdown-lite renderer used for article content (no raw HTML).
+ * Supports an archive photo line: ![alt](url "caption") or ![caption](url).
+ */
 export function parseArticleContent(content = '') {
   const lines = String(content).split(/\r?\n/);
   const blocks = [];
@@ -55,11 +58,24 @@ export function parseArticleContent(content = '') {
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>');
 
+  const isSafeImageSrc = (src) => /^(https?:\/\/|\/(?!\/))/i.test(src);
+
   for (const rawLine of lines) {
     const line = rawLine.trim();
 
     if (!line) {
       list = null;
+      continue;
+    }
+
+    const imageMatch = line.match(/^!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)$/);
+    if (imageMatch && isSafeImageSrc(imageMatch[2])) {
+      list = null;
+      blocks.push({
+        type: 'image',
+        src: imageMatch[2],
+        caption: (imageMatch[3] || imageMatch[1] || '').trim(),
+      });
       continue;
     }
 

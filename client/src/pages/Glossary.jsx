@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { BookMarked, Leaf, Search, Sprout } from 'lucide-react';
+import { ArrowUpRight, BookMarked, Leaf, Search, Sprout } from 'lucide-react';
 import { getData, mediaUrl } from '../services/api.js';
 import useAsync from '../hooks/useAsync.js';
 import { glossaryCategories, glossaryTerms } from '../data/glossary.js';
@@ -64,7 +64,8 @@ export default function Glossary() {
     if (!normalizedQuery) return true;
     return (
       item.name.toLowerCase().includes(normalizedQuery) ||
-      (item.description || '').toLowerCase().includes(normalizedQuery)
+      (item.description || '').toLowerCase().includes(normalizedQuery) ||
+      (item.gastronomyDescription || '').toLowerCase().includes(normalizedQuery)
     );
   });
 
@@ -181,31 +182,42 @@ export default function Glossary() {
                   <ul className="mt-4 space-y-2">
                     {ingredients.slice(0, 40).map((ingredient) => (
                       <li key={ingredient._id}>
-                        <div className="flex items-center gap-3 rounded-xl border border-line bg-cream-soft/60 p-2">
-                          <img
-                            src={
-                              mediaUrl(ingredient.image?.url) ||
-                              '/assets/ingredients/placeholder.svg'
-                            }
-                            alt={ingredient.name}
-                            loading="lazy"
-                            className="h-11 w-11 shrink-0 rounded-lg object-cover"
-                            onError={(event) => {
-                              event.currentTarget.src = '/assets/ingredients/placeholder.svg';
-                            }}
-                          />
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate font-sans text-sm font-semibold text-cocoa">
-                              {ingredient.name}
-                            </p>
-                            <p className="truncate font-sans text-[10px] text-cocoa-faint">
-                              {ingredient.originLocations
-                                ?.map((item) => item.district)
-                                .filter(Boolean)
-                                .join(', ') || 'Asal belum tercatat'}
-                            </p>
-                          </div>
-                          <VerificationBadge status={ingredient.verificationStatus} />
+                        <div className="rounded-xl border border-line bg-cream-soft/60 p-2 transition-colors hover:border-brick/40">
+                          <Link
+                            to={`/bahan/${ingredient.slug}`}
+                            className="flex items-center gap-3"
+                          >
+                            <img
+                              src={
+                                mediaUrl(ingredient.image?.url) ||
+                                '/assets/ingredients/placeholder.svg'
+                              }
+                              alt={ingredient.name}
+                              loading="lazy"
+                              className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                              onError={(event) => {
+                                event.currentTarget.src = '/assets/ingredients/placeholder.svg';
+                              }}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-sans text-sm font-semibold text-cocoa">
+                                {ingredient.name}
+                              </p>
+                              <p className="truncate font-sans text-[10px] text-cocoa-faint">
+                                {ingredient.originLocations
+                                  ?.map((item) => item.district)
+                                  .filter(Boolean)
+                                  .join(', ') || 'Asal belum tercatat'}
+                              </p>
+                            </div>
+                            <VerificationBadge status={ingredient.verificationStatus} />
+                          </Link>
+                          <Link
+                            to={`/bahan/${ingredient.slug}`}
+                            className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-brick/25 bg-brick-soft/60 px-3 py-1 font-sans text-[10px] font-semibold text-brick transition-colors hover:bg-brick hover:text-cream-soft"
+                          >
+                            Lihat Gastronomi <ArrowUpRight size={11} />
+                          </Link>
                         </div>
                       </li>
                     ))}

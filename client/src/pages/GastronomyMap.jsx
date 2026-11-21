@@ -216,10 +216,10 @@ export default function GastronomyMap() {
                           </Link>
                         ) : (
                           <Link
-                            to={`/glosarium?search=${encodeURIComponent(marker.name)}`}
+                            to={`/bahan/${marker.slug}`}
                             className="shrink-0 font-sans text-[11px] font-semibold text-teal-dark hover:underline"
                           >
-                            Bahan
+                            Gastronomi
                           </Link>
                         )}
                       </div>
