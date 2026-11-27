@@ -375,6 +375,7 @@ export default function AdminFoods() {
               rows={5}
               label="Sejarah & konteks"
               folder="foods/history"
+              maxImages={2}
               buttonLabel="Sisipkan foto sejarah"
               captionLabel="Keterangan foto sejarah"
               captionPlaceholder="Keterangan foto sejarah (opsional): tempat, tanggal, sumber…"
@@ -385,8 +386,9 @@ export default function AdminFoods() {
               help={
                 <>
                   Format: <code>##</code> subjudul, <code>-</code> daftar, <code>**tebal**</code>.
-                  Foto sejarah ditulis sebagai <code>![keterangan](url "caption")</code> pada baris
-                  tersendiri dan tampil sebagai gambar responsif dengan keterangan di halaman makanan.
+                  Maksimal <strong>dua</strong> foto sejarah, ditulis sebagai{' '}
+                  <code>![keterangan](url "caption")</code> pada baris tersendiri. Foto pertama tampil
+                  di kanan atas dan foto kedua di kiri bawah narasi, berdampingan dengan teks.
                 </>
               }
             />

@@ -41,6 +41,22 @@ export function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
 }
 
+const IMAGE_BLOCK_PATTERN = /^!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)$/;
+
+const isSafeImageSrc = (src) => /^(https?:\/\/|\/(?!\/))/i.test(src);
+
+/**
+ * Counts standalone archive photo lines so editors can enforce an image limit.
+ */
+export function countImageBlocks(content = '') {
+  return String(content)
+    .split(/\r?\n/)
+    .filter((line) => {
+      const match = line.trim().match(IMAGE_BLOCK_PATTERN);
+      return Boolean(match && isSafeImageSrc(match[2]));
+    }).length;
+}
+
 /**
  * Simple markdown-lite renderer used for article content (no raw HTML).
  * Supports an archive photo line: ![alt](url "caption") or ![caption](url).
@@ -58,8 +74,6 @@ export function parseArticleContent(content = '') {
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-  const isSafeImageSrc = (src) => /^(https?:\/\/|\/(?!\/))/i.test(src);
-
   for (const rawLine of lines) {
     const line = rawLine.trim();
 
@@ -68,7 +82,7 @@ export function parseArticleContent(content = '') {
       continue;
     }
 
-    const imageMatch = line.match(/^!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)$/);
+    const imageMatch = line.match(IMAGE_BLOCK_PATTERN);
     if (imageMatch && isSafeImageSrc(imageMatch[2])) {
       list = null;
       blocks.push({

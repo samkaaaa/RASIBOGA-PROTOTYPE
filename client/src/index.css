@@ -251,6 +251,46 @@
     @apply mr-2 inline-block rounded-full bg-brick/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-brick;
   }
 
+  /* Food history: two compact photos hug the top-right and bottom-left of the
+     text so both are visible without scrolling past a stack of images. */
+  .prose-editorial--corners {
+    display: flow-root;
+  }
+
+  .prose-editorial--corners .archive-figure {
+    width: clamp(132px, 36%, 240px);
+  }
+
+  .prose-editorial--corners .archive-figure-img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+  }
+
+  .archive-figure--top-right {
+    float: right;
+    margin: 0 0 1rem 1.25rem;
+  }
+
+  .archive-figure--bottom-left {
+    float: left;
+    margin: 1rem 1.25rem 0 0;
+  }
+
+  @media (max-width: 640px) {
+    .prose-editorial--corners .archive-figure {
+      width: clamp(104px, 38vw, 148px);
+    }
+
+    .prose-editorial--corners .archive-figure-img {
+      max-height: 120px;
+    }
+
+    .prose-editorial--corners .archive-figure-caption {
+      @apply px-2 py-1.5 text-[9px];
+    }
+  }
+
   .admin-input {
     @apply w-full rounded-lg border border-cocoa/15 bg-cream-soft px-3 py-2 font-sans text-sm text-cocoa placeholder:text-cocoa-faint focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20;
   }

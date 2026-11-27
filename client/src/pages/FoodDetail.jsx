@@ -253,7 +253,11 @@ export default function FoodDetail() {
           <div>
             <h2 className="display-2">Sejarah &amp; konteks</h2>
             {food.history?.trim() ? (
-              <RichText content={food.history} className="prose-editorial mt-6" />
+              <RichText
+                content={food.history}
+                className="prose-editorial mt-6"
+                imageLayout="corners"
+              />
             ) : (
               <div className="mt-6 rounded-2xl border border-dashed border-cocoa/15 bg-cream-soft p-6">
                 <p className="font-display text-lg">Catatan sejarah belum tersedia</p>

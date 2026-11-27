@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ImagePlus, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api.js';
+import { countImageBlocks } from '../../utils/format.js';
 
 const ACCEPTED = 'image/jpeg,image/png,image/webp,image/avif,image/gif';
 
@@ -33,12 +34,16 @@ export default function MediaTextEditor({
   successMessage = 'Foto arsip disisipkan ke isi artikel.',
   placeholder = '## Subjudul\nParagraf artikel…\n![Foto arsip](https://… "Keterangan arsip")',
   help = DEFAULT_HELP,
+  maxImages = 0,
 }) {
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
   const textareaRef = useRef(null);
   const fileRef = useRef(null);
   const caretRef = useRef(null);
+  const imageCount = countImageBlocks(value);
+  const hasImageLimit = maxImages > 0;
+  const atImageLimit = hasImageLimit && imageCount >= maxImages;
 
   useEffect(() => {
     if (caretRef.current == null || !textareaRef.current) return;
@@ -46,6 +51,14 @@ export default function MediaTextEditor({
     textareaRef.current.setSelectionRange(caretRef.current, caretRef.current);
     caretRef.current = null;
   }, [value]);
+
+  const applyChange = (next) => {
+    if (hasImageLimit && countImageBlocks(next) > maxImages) {
+      toast.error(`Maksimal ${maxImages} foto. Hapus salah satu baris foto untuk menggantinya.`);
+      return;
+    }
+    onChange(next);
+  };
 
   const insertBlock = (block) => {
     const textarea = textareaRef.current;
@@ -64,12 +77,20 @@ export default function MediaTextEditor({
     const caret = before.length + prefix.length + block.length;
 
     caretRef.current = caret;
-    onChange(next);
+    applyChange(next);
   };
 
   const handleFile = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    const current = textareaRef.current?.value ?? value;
+    if (hasImageLimit && countImageBlocks(current) >= maxImages) {
+      toast.error(
+        `Maksimal ${maxImages} foto. Hapus salah satu baris foto untuk menggantinya.`,
+      );
+      return;
+    }
 
     const cleanCaption = caption.trim().replace(/["'\]\r\n]/g, ' ').replace(/\s+/g, ' ').trim();
     const finalCaption = cleanCaption || defaultCaption;
@@ -97,7 +118,14 @@ export default function MediaTextEditor({
 
   return (
     <div>
-      <span className="admin-label">{label}</span>
+      <span className="admin-label">
+        {label}
+        {hasImageLimit && (
+          <span className="ml-2 font-normal normal-case tracking-normal text-cocoa-faint">
+            {imageCount}/{maxImages} foto
+          </span>
+        )}
+      </span>
 
       <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
@@ -111,11 +139,12 @@ export default function MediaTextEditor({
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          disabled={uploading}
+          disabled={uploading || atImageLimit}
+          title={atImageLimit ? `Maksimal ${maxImages} foto` : undefined}
           className="btn-outline btn-sm shrink-0"
         >
           {uploading ? <Loader2 size={13} className="animate-spin" /> : <ImagePlus size={13} />}
-          {uploading ? 'Mengunggah…' : buttonLabel}
+          {uploading ? 'Mengunggah…' : atImageLimit ? 'Batas foto tercapai' : buttonLabel}
         </button>
         <input
           ref={fileRef}
@@ -129,13 +158,19 @@ export default function MediaTextEditor({
       <textarea
         ref={textareaRef}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => applyChange(event.target.value)}
         rows={rows}
         className="admin-input font-mono text-xs"
         placeholder={placeholder}
       />
 
       <p className="mt-1 font-sans text-[10px] leading-relaxed text-cocoa-faint">{help}</p>
+      {atImageLimit && (
+        <p className="mt-1 font-sans text-[10px] leading-relaxed text-brick">
+          Batas {maxImages} foto tercapai. Hapus salah satu baris <code>![…](…)</code> untuk
+          menggantinya.
+        </p>
+      )}
     </div>
   );
 }
