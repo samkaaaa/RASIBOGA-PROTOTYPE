@@ -8,6 +8,7 @@ import AdminTable from '../../components/admin/AdminTable.jsx';
 import Modal from '../../components/admin/Modal.jsx';
 import Field from '../../components/admin/Field.jsx';
 import ImageField from '../../components/admin/ImageField.jsx';
+import MediaTextEditor from '../../components/admin/MediaTextEditor.jsx';
 import { DraftBadge, ProvenanceBadge } from '../../components/common/Badges.jsx';
 import { CATEGORIES, PROVENANCE_OPTIONS } from '../../utils/constants.js';
 
@@ -367,18 +368,29 @@ export default function AdminFoods() {
             />
           </Field>
 
-          <Field
-            label="Sejarah & konteks"
-            hint="Gunakan ## untuk subjudul dan - untuk daftar."
-            className="sm:col-span-2"
-          >
-            <textarea
+          <div className="sm:col-span-2">
+            <MediaTextEditor
               value={form.history}
-              onChange={(event) => update('history', event.target.value)}
+              onChange={(value) => update('history', value)}
               rows={5}
-              className="admin-input"
+              label="Sejarah & konteks"
+              folder="foods/history"
+              buttonLabel="Sisipkan foto sejarah"
+              captionLabel="Keterangan foto sejarah"
+              captionPlaceholder="Keterangan foto sejarah (opsional): tempat, tanggal, sumber…"
+              defaultCaption="Dokumentasi sejarah RASIBOGA"
+              altPrefix="Foto sejarah"
+              successMessage="Foto sejarah disisipkan ke sejarah masakan."
+              placeholder={'Paragraf sejarah masakan…\n![Foto sejarah](https://… "Keterangan foto")'}
+              help={
+                <>
+                  Format: <code>##</code> subjudul, <code>-</code> daftar, <code>**tebal**</code>.
+                  Foto sejarah ditulis sebagai <code>![keterangan](url "caption")</code> pada baris
+                  tersendiri dan tampil sebagai gambar responsif dengan keterangan di halaman makanan.
+                </>
+              }
             />
-          </Field>
+          </div>
 
           <Field label="Filosofi & penyajian" className="sm:col-span-2">
             <textarea

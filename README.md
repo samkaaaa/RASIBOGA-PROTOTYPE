@@ -227,6 +227,7 @@ Ubah `mainImage.url`, `image.url`, atau `coverImage` di `server/data/seedData.js
   ```
 
 - Halaman detail artikel merender syntax tersebut sebagai `<figure>` responsif dengan `<figcaption>` bergaya RASIBOGA. Gambar tidak dipotong dan lebar mengikuti container.
+- Toolbar yang sama tersedia di **Admin → Makanan**, kolom **SEJARAH & KONTEKS**, dengan tombol **Sisipkan foto sejarah** (folder `rasiboga/foods/history`). Foto sejarah tampil dengan keterangan di halaman detail makanan.
 - Hanya URL `http(s)://` atau path absolut (`/uploads/...`, `/assets/...`) yang diterima parser.
 
 ### Deskripsi gastronomi bahan

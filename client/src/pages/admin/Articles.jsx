@@ -8,7 +8,7 @@ import AdminTable from '../../components/admin/AdminTable.jsx';
 import Modal from '../../components/admin/Modal.jsx';
 import Field from '../../components/admin/Field.jsx';
 import ImageField from '../../components/admin/ImageField.jsx';
-import ArticleContentEditor from '../../components/admin/ArticleContentEditor.jsx';
+import MediaTextEditor from '../../components/admin/MediaTextEditor.jsx';
 import { formatDate } from '../../utils/format.js';
 
 const EMPTY_FORM = {
@@ -326,7 +326,7 @@ export default function AdminArticles() {
           </div>
 
           <div className="sm:col-span-2">
-            <ArticleContentEditor
+            <MediaTextEditor
               value={form.content}
               onChange={(value) => update('content', value)}
               rows={12}

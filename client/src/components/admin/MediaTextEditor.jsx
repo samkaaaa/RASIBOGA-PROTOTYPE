@@ -5,12 +5,35 @@ import api from '../../services/api.js';
 
 const ACCEPTED = 'image/jpeg,image/png,image/webp,image/avif,image/gif';
 
+const DEFAULT_HELP = (
+  <>
+    Format: <code>##</code> subjudul, <code>###</code> subjudul kecil, <code>-</code> daftar,{' '}
+    <code>**tebal**</code>. Foto arsip ditulis sebagai <code>![keterangan](url "caption")</code>{' '}
+    pada baris tersendiri dan tampil sebagai gambar responsif dengan keterangan di halaman artikel.
+  </>
+);
+
 /**
- * Markdown-lite editor for article bodies with an "arsip foto" upload button.
+ * Markdown-lite text editor with an image upload button.
  * Uploaded photos are inserted as `![alt](url "caption")` at the caret so the
- * public RichText renderer can show a responsive figure with a caption.
+ * public RichText renderer shows a responsive figure with a caption.
+ * Used for article bodies and for the food history section.
  */
-export default function ArticleContentEditor({ value = '', onChange, rows = 12 }) {
+export default function MediaTextEditor({
+  value = '',
+  onChange,
+  rows = 12,
+  label = 'Isi artikel',
+  folder = 'articles/archive',
+  buttonLabel = 'Sisipkan foto arsip',
+  captionLabel = 'Keterangan foto arsip',
+  captionPlaceholder = 'Keterangan arsip (opsional): tempat, tanggal, sumber…',
+  defaultCaption = 'Arsip dokumentasi RASIBOGA',
+  altPrefix = 'Foto arsip',
+  successMessage = 'Foto arsip disisipkan ke isi artikel.',
+  placeholder = '## Subjudul\nParagraf artikel…\n![Foto arsip](https://… "Keterangan arsip")',
+  help = DEFAULT_HELP,
+}) {
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
   const textareaRef = useRef(null);
@@ -26,10 +49,11 @@ export default function ArticleContentEditor({ value = '', onChange, rows = 12 }
 
   const insertBlock = (block) => {
     const textarea = textareaRef.current;
-    const start = textarea?.selectionStart ?? value.length;
+    const current = textarea?.value ?? value;
+    const start = textarea?.selectionStart ?? current.length;
     const end = textarea?.selectionEnd ?? start;
-    const before = value.slice(0, start);
-    const after = value.slice(end);
+    const before = current.slice(0, start);
+    const after = current.slice(end);
 
     let prefix = '';
     if (before) {
@@ -48,23 +72,23 @@ export default function ArticleContentEditor({ value = '', onChange, rows = 12 }
     if (!file) return;
 
     const cleanCaption = caption.trim().replace(/["'\]\r\n]/g, ' ').replace(/\s+/g, ' ').trim();
-    const finalCaption = cleanCaption || 'Arsip dokumentasi RASIBOGA';
-    const alt = `Foto arsip — ${finalCaption}`.replace(/\]/g, '');
+    const finalCaption = cleanCaption || defaultCaption;
+    const alt = `${altPrefix} — ${finalCaption}`.replace(/\]/g, '');
 
     setUploading(true);
     try {
       const payload = new FormData();
       payload.append('file', file);
-      payload.append('folder', 'articles/archive');
+      payload.append('folder', folder);
       const response = await api.post('/uploads', payload);
       const url = response.data?.data?.url;
       if (!url) throw new Error('Server tidak mengembalikan URL berkas.');
 
       insertBlock(`![${alt}](${url} "${finalCaption}")`);
       setCaption('');
-      toast.success('Foto arsip disisipkan ke isi artikel.');
+      toast.success(successMessage);
     } catch (error) {
-      toast.error(error.message || 'Gagal mengunggah foto arsip.');
+      toast.error(error.message || 'Gagal mengunggah foto.');
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
@@ -73,16 +97,16 @@ export default function ArticleContentEditor({ value = '', onChange, rows = 12 }
 
   return (
     <div>
-      <span className="admin-label">Isi artikel</span>
+      <span className="admin-label">{label}</span>
 
       <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           type="text"
           value={caption}
           onChange={(event) => setCaption(event.target.value)}
-          placeholder="Keterangan arsip (opsional): tempat, tanggal, sumber…"
+          placeholder={captionPlaceholder}
           className="admin-input flex-1"
-          aria-label="Keterangan foto arsip"
+          aria-label={captionLabel}
         />
         <button
           type="button"
@@ -91,7 +115,7 @@ export default function ArticleContentEditor({ value = '', onChange, rows = 12 }
           className="btn-outline btn-sm shrink-0"
         >
           {uploading ? <Loader2 size={13} className="animate-spin" /> : <ImagePlus size={13} />}
-          {uploading ? 'Mengunggah…' : 'Sisipkan foto arsip'}
+          {uploading ? 'Mengunggah…' : buttonLabel}
         </button>
         <input
           ref={fileRef}
@@ -108,14 +132,10 @@ export default function ArticleContentEditor({ value = '', onChange, rows = 12 }
         onChange={(event) => onChange(event.target.value)}
         rows={rows}
         className="admin-input font-mono text-xs"
-        placeholder={'## Subjudul\nParagraf artikel…\n![Foto arsip](https://… "Keterangan arsip")'}
+        placeholder={placeholder}
       />
 
-      <p className="mt-1 font-sans text-[10px] leading-relaxed text-cocoa-faint">
-        Format: <code>##</code> subjudul, <code>###</code> subjudul kecil, <code>-</code> daftar,{' '}
-        <code>**tebal**</code>. Foto arsip ditulis sebagai <code>![keterangan](url "caption")</code>{' '}
-        pada baris tersendiri dan tampil sebagai gambar responsif dengan keterangan di halaman artikel.
-      </p>
+      <p className="mt-1 font-sans text-[10px] leading-relaxed text-cocoa-faint">{help}</p>
     </div>
   );
 }
