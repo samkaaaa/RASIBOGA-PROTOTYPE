@@ -6,8 +6,8 @@ import { parseArticleContent } from '../../utils/format.js';
  * **bold**, *italic*) without ever injecting raw HTML.
  *
  * With `imageLayout="corners"`, the first two archive photos are pulled out of
- * their text position: the first floats at the top right and the second near
- * the bottom left of the section, so both stay beside the text.
+ * their text position: the first floats at the top right and the second just
+ * below it on the left, so both stay in the first screenful beside the text.
  */
 export default function RichText({
   content = '',
@@ -78,9 +78,9 @@ export default function RichText({
   const nodes = text.map(({ block, index }) => renderBlock(block, index));
   if (images[0]) nodes.unshift(renderFigure(images[0].block, images[0].index, 'top-right'));
   if (images[1]) {
-    // Keep the second photo beside the closing paragraph instead of pushing
-    // it below the whole text, where the reader would have to scroll for it.
-    const insertAt = text.length >= 2 ? nodes.length - 1 : nodes.length;
+    // Place the second photo just below the first one on the left, after the
+    // opening paragraph, so both stay in the first screenful of the section.
+    const insertAt = text.length >= 2 ? 2 : nodes.length;
     nodes.splice(insertAt, 0, renderFigure(images[1].block, images[1].index, 'bottom-left'));
   }
   images.slice(2).forEach(({ block, index }) => nodes.push(renderFigure(block, index)));

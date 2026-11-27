@@ -274,6 +274,7 @@
 
   .archive-figure--bottom-left {
     float: left;
+    clear: both;
     margin: 1rem 1.25rem 0 0;
   }
 

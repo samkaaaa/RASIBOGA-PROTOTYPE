@@ -388,7 +388,7 @@ export default function AdminFoods() {
                   Format: <code>##</code> subjudul, <code>-</code> daftar, <code>**tebal**</code>.
                   Maksimal <strong>dua</strong> foto sejarah, ditulis sebagai{' '}
                   <code>![keterangan](url "caption")</code> pada baris tersendiri. Foto pertama tampil
-                  di kanan atas dan foto kedua di kiri bawah narasi, berdampingan dengan teks.
+                  di kanan atas dan foto kedua di kiri bawahnya, berdampingan dengan paragraf pembuka.
                 </>
               }
             />
